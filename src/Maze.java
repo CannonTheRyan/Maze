@@ -25,8 +25,6 @@ public class Maze
         maze[maze.length-2][maze[0].length-1] = " ";
     }
 
-
-
     public static String printArr(String[][] arr)
     {
         String returnStr = "";
@@ -43,7 +41,7 @@ public class Maze
         return returnStr;
     }
 
-    public void move(String direction)
+    public boolean move(String direction)
     {
         for (int i = 0; i < maze.length; i++)
         {
@@ -71,6 +69,12 @@ public class Maze
                 }
             }
         }
+        return checkWin();
+    }
+
+    public boolean checkWin()
+    {
+        return maze[maze.length-2][maze[0].length-1].equals(FACE);
     }
 
     public String[][] getMaze()
