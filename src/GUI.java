@@ -12,7 +12,6 @@ public class GUI implements KeyListener, ActionListener
     private JPanel sliderPanel;
     private JPanel mazePanel;
     private JSlider slider;
-    private int size;
 
     public GUI()
     {
@@ -22,6 +21,8 @@ public class GUI implements KeyListener, ActionListener
     {
         frame = new JFrame("MAZE");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setFocusable(true);
+        frame.addKeyListener(this);
 
         slider = new JSlider(20, 50);
         slider.setMinorTickSpacing(5);
@@ -42,38 +43,41 @@ public class GUI implements KeyListener, ActionListener
 
     }
 
-    public void load()
-    {
-        frame.add(mazePanel);
-        reload();
-
-    }
-
     public void reload()
     {
+        frame.remove(mazePanel);
+        mazePanel = new JPanel(new GridLayout(maze.getSize(), maze.getSize(), 0, -5));
         for (int i = 0; i < maze.getMaze().length; i++)
         {
             for (int j = 0; j < maze.getMaze()[0].length; j++)
             {
-               mazePanel.add(new JLabel(maze.getMaze()[i][j]));
+                JLabel l = new JLabel(maze.getMaze()[i][j]);
+                mazePanel.add(l);
             }
         }
+        frame.add(mazePanel);
+        SwingUtilities.updateComponentTreeUI(frame);
     }
 
     @Override
     public void keyPressed(KeyEvent e)
     {
         int keyCode = e.getKeyCode();
-        if (keyCode == KeyEvent.VK_UP) {
-            maze.move("up");
-        } else if (keyCode == KeyEvent.VK_DOWN) {
-            maze.move("down");
-        } else if (keyCode == KeyEvent.VK_LEFT) {
-            maze.move("left");
-        } else if (keyCode == KeyEvent.VK_RIGHT) {
-            maze.move("right");
+        boolean win = false;
+        if (keyCode == KeyEvent.VK_W) {
+            win = maze.move("up");
+        } else if (keyCode == KeyEvent.VK_S) {
+            win = maze.move("down");
+        } else if (keyCode == KeyEvent.VK_A) {
+            win = maze.move("left");
+        } else if (keyCode == KeyEvent.VK_D) {
+            win = maze.move("right");
         }
         reload();
+        if (win)
+        {
+            System.out.println("you win");
+        }
     }
 
     @Override
@@ -90,13 +94,12 @@ public class GUI implements KeyListener, ActionListener
 
     public void actionPerformed(ActionEvent e)
     {
-        size = slider.getValue();
+        int size = slider.getValue();
         maze = new Maze(size);
-        mazePanel = new JPanel(new GridLayout(size, size, 0, -5));
-        mazePanel.setFocusable(true);
-        mazePanel.addKeyListener(this);
+        mazePanel = new JPanel(new GridLayout(maze.getSize(), maze.getSize(), 0, -5));
         sliderPanel.setVisible(false);
         frame.remove(sliderPanel);
-        load();
+        frame.add(mazePanel);
+        reload();
     }
 }
