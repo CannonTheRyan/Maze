@@ -23,8 +23,9 @@ public class GUI implements KeyListener, ActionListener
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setFocusable(true);
         frame.addKeyListener(this);
+        frame.setSize(1000, 1000);
 
-        slider = new JSlider(20, 50);
+        slider = new JSlider(30, 70);
         slider.setMinorTickSpacing(5);
         slider.setMajorTickSpacing(10);
         slider.setPaintTicks(true);
@@ -96,10 +97,12 @@ public class GUI implements KeyListener, ActionListener
     {
         int size = slider.getValue();
         maze = new Maze(size);
+        maze.makeMaze(new Coordinate(1, 1));
         mazePanel = new JPanel(new GridLayout(maze.getSize(), maze.getSize(), 0, -5));
         sliderPanel.setVisible(false);
         frame.remove(sliderPanel);
         frame.add(mazePanel);
+        frame.setSize(size*10+20, size*10+20);
         reload();
     }
 }

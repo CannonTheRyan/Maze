@@ -1,12 +1,10 @@
-import com.sun.jdi.ClassObjectReference;
-
-import java.nio.charset.CoderResult;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class Maze
 {
     private final String WALL = "\u2B1B";
-    private final String FACE = "\uD83E\uDD21";
+    private final String FACE = "O";
     private String[][] maze;
     private int size;
     private ArrayList<Coordinate> visitedCells;
@@ -30,14 +28,15 @@ public class Maze
         {
             for (int col = 0; col < maze[0].length; col++)
             {
-                if (row == 0 || col == 0 || row == maze.length - 1 || col == maze[0].length - 1)
-                {
-                    maze[row][col] = WALL;
-                }
-                else
-                {
-                    maze[row][col] = " ";
-                }
+                maze[row][col] = WALL;
+//                if (row == 0 || col == 0 || row == maze.length - 1 || col == maze[0].length - 1)
+//                {
+//                    maze[row][col] = WALL;
+//                }
+//                else
+//                {
+//                    maze[row][col] = " ";
+//                }
             }
         }
         maze[1][0] = FACE;
@@ -62,7 +61,56 @@ public class Maze
 
     public void makeMaze(Coordinate coord)
     {
+        int row = coord.getRow();
+        int col = coord.getCol();
         visitedCells.add(coord);
+        maze[row][col] = " ";
+        String direction = "";
+        boolean up = notVisited(new Coordinate(row-1, col));
+        boolean down = notVisited(new Coordinate(row+1, col));
+        boolean left = notVisited(new Coordinate(row, col-1));
+        boolean right = notVisited(new Coordinate(row, col+1));
+        int count = boolToInt(up) + boolToInt(down) + boolToInt(left) + boolToInt(right);
+        if (count == 0)
+        {
+            for (int i = 1; i < size-1; i++)
+            {
+                for (int j = 1; j < size-1; j++)
+                {
+                    Coordinate tempCoord = new Coordinate(i, j);
+                    if (notVisited(tempCoord))
+                    {
+                        makeMaze(tempCoord);
+                    }
+                }
+            }
+        }
+        int temp = 0;
+        int random = (int) (Math.random() * count) + 1;
+        ArrayList<Boolean> list = new ArrayList<Boolean>();
+        list.add(up);
+        list.add(down);
+        list.add(left);
+        list.add(right);
+        for (int i = 0; i < 4; i++)
+        {
+            if (list.get(i) == true)
+            {
+                temp++;
+            }
+            if (temp == random)
+            {
+                if (i == 0)
+                    makeMaze(new Coordinate(row-1, col));
+                else if (i == 1)
+                    makeMaze(new Coordinate(row+1, col));
+                else if (i == 2)
+                    makeMaze(new Coordinate(row, col-1));
+                else if (i == 3)
+                    makeMaze(new Coordinate(row, col+1));
+                break;
+            }
+        }
 
     }
 
@@ -107,6 +155,48 @@ public class Maze
         }
         return checkWin();
     }
+
+    public int boolToInt(boolean tf)
+    {
+        return tf ? 1 : 0;
+    }
+
+    public boolean notVisited(Coordinate coord)
+    {
+        int row = coord.getRow();
+        int col = coord.getCol();
+        for (Coordinate c : visitedCells)
+        {
+            if (c.getRow() == row && c.getCol() == col)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean checkSpace(Coordinate coord, String directionFrom)
+    {
+        int row = coord.getRow();
+        int col = coord.getCol();
+        if (directionFrom.equals("up"))
+        {
+            return !(maze[row+1][col].equals(" ") || maze[row][col-1].equals(" ") || maze[row][col+1].equals(" "));
+        }
+        else if (directionFrom.equals("down"))
+        {
+
+        }
+        else if (directionFrom.equals("left"))
+        {
+
+        }
+        else if (directionFrom.equals("right"))
+        {
+
+        }
+    }
+
 
     public boolean checkWin()
     {
