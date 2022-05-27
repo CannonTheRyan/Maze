@@ -40,6 +40,8 @@ public class Maze
         }
         maze[1][0] = FACE;
         maze[maze.length-2][maze[0].length-1] = " ";
+        maze[maze.length-2][maze[0].length-2] = " ";
+        //visitedCells.add(new Coordinate(size-2, size-2));
     }
 
     public static String printArr(String[][] arr)
@@ -62,19 +64,21 @@ public class Maze
     {
         int row = coord.getRow();
         int col = coord.getCol();
+//        System.out.println(row + ", " + col);
+//        printArr(maze);
         visitedCells.add(coord);
         maze[row][col] = " ";
-        String direction = "";
         boolean up = checkSpace(new Coordinate(row-1, col), "up");
         boolean down = checkSpace(new Coordinate(row+1, col), "down");
         boolean left = checkSpace(new Coordinate(row, col-1), "left");
         boolean right = checkSpace(new Coordinate(row, col+1), "right");
         int count = boolToInt(up) + boolToInt(down) + boolToInt(left) + boolToInt(right);
-        System.out.println(count);
-        System.out.println(up);
-        System.out.println(down);
-        System.out.println(left);
-        System.out.println(right);
+//        System.out.println(count);
+//        System.out.println("nottvisited up: " + notVisited(new Coordinate(row-1, col)));
+//        System.out.println(up);
+//        System.out.println(down);
+//        System.out.println(left);
+//        System.out.println(right);
         if (count == 0)
         {
             for (int i = 1; i < size-1; i++)
@@ -82,9 +86,9 @@ public class Maze
                 for (int j = 1; j < size-1; j++)
                 {
                     Coordinate tempCoord = new Coordinate(i, j);
-                    if (notVisited(tempCoord)/*validScan(tempCoord)*/)
+                    if (validScan(tempCoord))
                     {
-                        System.out.println("scan");
+//                        System.out.println("scan");
                         makeMaze(tempCoord);
                     }
                 }
@@ -106,21 +110,27 @@ public class Maze
             if (temp == random)
             {
                 if (i == 0) {
-                    System.out.println("up");
+                    //System.out.println("                                       up");
                     makeMaze(new Coordinate(row-1, col));
                 } else if (i == 1) {
-                    System.out.println("down");
+                    //System.out.println("                                       down");
                     makeMaze(new Coordinate(row + 1, col));
                 } else if (i == 2) {
-                    System.out.println("left");
+                    //System.out.println("                                       left");
                     makeMaze(new Coordinate(row, col - 1));
                 } else if (i == 3) {
-                    System.out.println("right");
+                    //System.out.println("                                       right");
                     makeMaze(new Coordinate(row, col + 1));
                 }
                 break;
             }
         }
+       // if ()
+    }
+
+    public void cleanUpMaze()
+    {
+        //for (int )
     }
 
     public boolean move(String direction)
@@ -202,28 +212,34 @@ public class Maze
     {
         int row = coord.getRow();
         int col = coord.getCol();
-        return notVisited(new Coordinate(row-1, col)) || notVisited(new Coordinate(row+1, col)) || notVisited(new Coordinate(row, col-1)) || notVisited(new Coordinate(row, col+1));
+
+        int up = boolToInt(notVisited(new Coordinate(row-1, col)) && checkSpace(new Coordinate(row-1, col), "up"));
+        int down = boolToInt(notVisited(new Coordinate(row+1, col)) && checkSpace(new Coordinate(row+1, col), "down"));
+        int left = boolToInt(notVisited(new Coordinate(row, col-1)) && checkSpace(new Coordinate(row, col-1), "left"));
+        int right = boolToInt(notVisited(new Coordinate(row, col+1)) && checkSpace(new Coordinate(row, col+1), "right"));
+        return up + down + left + right >= 2;
     }
 
     public boolean checkSpace(Coordinate coord, String directionGoing)
     {
         int row = coord.getRow();
         int col = coord.getCol();
+        int tempUpRow = row-1 == 0 ? row: row-1;
+        int tempDownRow = row+1 == size-1 ? row : row+1;
+        int tempLeftCol = col-1 == 0 ? col: col-1;
+        int tempRightCol = col+1 == size-1 ? col: col+1;
         if (directionGoing.equals("up"))
         {
             if (row-1 < 0)
             {
                 return false;
             }
-            int tempRow = row-1 == 0 ? row: row-1;
-            int tempLeftCol = col-1 == 0 ? col: col-1;
-            int tempRightCol = col+1 == size-1 ? col: col+1;
             return  notVisited(new Coordinate(row, col)) &&
                     notVisited(new Coordinate(row, tempLeftCol)) &&
                     notVisited(new Coordinate(row, tempRightCol)) &&
-                    notVisited(new Coordinate(tempRow, col)) &&
-                    notVisited(new Coordinate(tempRow, tempLeftCol)) &&
-                    notVisited(new Coordinate(tempRow, tempRightCol));
+                    notVisited(new Coordinate(tempUpRow, col)) &&
+                    notVisited(new Coordinate(tempUpRow, tempLeftCol)) &&
+                    notVisited(new Coordinate(tempUpRow, tempRightCol));
 
         }
         else if (directionGoing.equals("down"))
@@ -232,13 +248,12 @@ public class Maze
             {
                 return false;
             }
-
             return  notVisited(new Coordinate(row, col)) &&
-                    notVisited(new Coordinate(row, col-1)) &&
-                    notVisited(new Coordinate(row, col+1)) &&
-                    notVisited(new Coordinate(row+1, col)) &&
-                    notVisited(new Coordinate(row+1, col-1)) &&
-                    notVisited(new Coordinate(row+1, col+1));
+                    notVisited(new Coordinate(row, tempLeftCol)) &&
+                    notVisited(new Coordinate(row, tempRightCol)) &&
+                    notVisited(new Coordinate(tempDownRow, col)) &&
+                    notVisited(new Coordinate(tempDownRow, tempLeftCol)) &&
+                    notVisited(new Coordinate(tempDownRow, tempRightCol));
         }
         else if (directionGoing.equals("left"))
         {
@@ -247,11 +262,11 @@ public class Maze
                 return false;
             }
             return  notVisited(new Coordinate(row, col)) &&
-                    notVisited(new Coordinate(row-1, col)) &&
-                    notVisited(new Coordinate(row+1, col)) &&
-                    notVisited(new Coordinate(row, col-1)) &&
-                    notVisited(new Coordinate(row-1, col-1)) &&
-                    notVisited(new Coordinate(row+1, col-1));
+                    notVisited(new Coordinate(tempUpRow, col)) &&
+                    notVisited(new Coordinate(tempDownRow, col)) &&
+                    notVisited(new Coordinate(row, tempLeftCol)) &&
+                    notVisited(new Coordinate(tempUpRow, tempLeftCol)) &&
+                    notVisited(new Coordinate(tempDownRow, tempLeftCol));
         }
         else if (directionGoing.equals("right"))
         {
@@ -260,11 +275,11 @@ public class Maze
                 return false;
             }
             return  notVisited(new Coordinate(row, col)) &&
-                    notVisited(new Coordinate(row-1, col)) &&
-                    notVisited(new Coordinate(row+1, col)) &&
-                    notVisited(new Coordinate(row, col+1)) &&
-                    notVisited(new Coordinate(row-1, col+1)) &&
-                    notVisited(new Coordinate(row+1, col+1));
+                    notVisited(new Coordinate(tempUpRow, col)) &&
+                    notVisited(new Coordinate(tempDownRow, col)) &&
+                    notVisited(new Coordinate(row, tempRightCol)) &&
+                    notVisited(new Coordinate(tempUpRow, tempRightCol)) &&
+                    notVisited(new Coordinate(tempDownRow, tempRightCol));
         }
         return true;
     }

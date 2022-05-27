@@ -97,7 +97,8 @@ public class GUI implements KeyListener, ActionListener
     {
         int size = slider.getValue();
         maze = new Maze(size);
-        maze.makeMaze(new Coordinate(1, 2));
+        maze.makeMaze(new Coordinate(1, 1));
+        maze.makeMaze(new Coordinate(size-2, size-2));
         mazePanel = new JPanel(new GridLayout(maze.getSize(), maze.getSize(), 0, -5));
         sliderPanel.setVisible(false);
         frame.remove(sliderPanel);
