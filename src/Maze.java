@@ -111,7 +111,7 @@ public class Maze
             {
                 if (i == 0) {
                     //System.out.println("                                       up");
-                    makeMaze(new Coordinate(row-1, col));
+                    makeMaze(new Coordinate(row - 1, col));
                 } else if (i == 1) {
                     //System.out.println("                                       down");
                     makeMaze(new Coordinate(row + 1, col));
@@ -125,12 +125,57 @@ public class Maze
                 break;
             }
         }
-       // if ()
+
     }
 
     public void cleanUpMaze()
     {
-        //for (int )
+        String[][] tempMaze = new String[size][size];
+        for (int i = 0; i < size; i++)
+        {
+            for (int j = 0; j < size; j++)
+            {
+                tempMaze[i][j] = maze[i][j];
+            }
+        }
+
+        for (int row = 1; row < size-2; row++)
+        {
+            for (int col = 1; col < size-2; col++)
+            {
+//                if (row == 1 & col == 1)
+//                {
+//
+//                }
+//                else if (tempMaze[row][col].equals(" "))
+//                {
+//                    int up = boolToInt(maze[row-1][col].equals(" "));
+//                    int down = boolToInt(maze[row+1][col].equals(" "));
+//                    int left = boolToInt(maze[row][col-1].equals(" "));
+//                    int right = boolToInt(maze[row][col+1].equals(" "));
+//                    if (up + down + left + right == 1)
+//                    {
+//                        maze[row][col] = WALL;
+//                    }
+//                }
+                if (tempMaze[row][col].equals(WALL))
+                {
+                    int up = boolToInt(maze[row-1][col].equals(" "));
+                    int down = boolToInt(maze[row+1][col].equals(" "));
+                    int left = boolToInt(maze[row][col-1].equals(" "));
+                    int right = boolToInt(maze[row][col+1].equals(" "));
+                    int nw = boolToInt(maze[row-1][col-1].equals(" "));
+                    int ne = boolToInt(maze[row-1][col+1].equals(" "));
+                    int sw = boolToInt(maze[row+1][col-1].equals(" "));
+                    int se = boolToInt(maze[row+1][col+1].equals(" "));
+                    int sum = up + down + left + right + nw + ne + sw + se;
+                    if (sum <= 3)
+                    {
+                        maze[row][col] = " ";
+                    }
+                }
+            }
+        }
     }
 
     public boolean move(String direction)
@@ -217,7 +262,7 @@ public class Maze
         int down = boolToInt(notVisited(new Coordinate(row+1, col)) && checkSpace(new Coordinate(row+1, col), "down"));
         int left = boolToInt(notVisited(new Coordinate(row, col-1)) && checkSpace(new Coordinate(row, col-1), "left"));
         int right = boolToInt(notVisited(new Coordinate(row, col+1)) && checkSpace(new Coordinate(row, col+1), "right"));
-        return up + down + left + right >= 2;
+        return up + down + left + right >= 1;
     }
 
     public boolean checkSpace(Coordinate coord, String directionGoing)
