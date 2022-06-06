@@ -1,5 +1,5 @@
-public class Coordinate
-{
+public class Coordinate {
+
     private int row;
     private int col;
 

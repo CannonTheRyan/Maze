@@ -3,13 +3,14 @@ import java.util.ArrayList;
 public class Maze
 {
     private final String WALL = "\u2B1B";
-    private final String FACE = "O";
+    private String face;
     private String[][] maze;
     private int size;
     private ArrayList<Coordinate> visitedCells;
 
     public Maze(int size)
     {
+        face = " ";
         this.size = size;
         maze = new String[size][size];
         visitedCells = new ArrayList<Coordinate>();
@@ -38,10 +39,8 @@ public class Maze
 //                }
             }
         }
-        maze[1][0] = FACE;
         maze[maze.length-2][maze[0].length-1] = " ";
         maze[maze.length-2][maze[0].length-2] = " ";
-        //visitedCells.add(new Coordinate(size-2, size-2));
     }
 
     public static String printArr(String[][] arr)
@@ -111,7 +110,7 @@ public class Maze
             {
                 if (i == 0) {
                     //System.out.println("                                       up");
-                    makeMaze(new Coordinate(row-1, col));
+                    makeMaze(new Coordinate(row - 1, col));
                 } else if (i == 1) {
                     //System.out.println("                                       down");
                     makeMaze(new Coordinate(row + 1, col));
@@ -125,61 +124,58 @@ public class Maze
                 break;
             }
         }
-       // if ()
+
     }
 
     public void cleanUpMaze()
     {
-        //for (int )
-    }
-
-    public boolean move(String direction)
-    {
-        for (int i = 0; i < maze.length; i++)
+        String[][] tempMaze = new String[size][size];
+        for (int i = 0; i < size; i++)
         {
-            for (int j = 0; j < maze[0].length; j++)
+            for (int j = 0; j < size; j++)
             {
-                if (maze[i][j].equals(FACE))
-                {
-                    try
-                    {
-                        if (direction.equals("right") && !maze[i][j+1].equals(WALL))
-                        {
-                            maze[i][j] = " ";
-                            maze[i][j+1] = FACE;
-                            i = maze.length;
-                            break;
-                        }
-                        else if (direction.equals("left") && !maze[i][j-1].equals(WALL))
-                        {
-                            maze[i][j] = " ";
-                            maze[i][j-1] = FACE;
-                            i = maze.length;
-                            break;
-                        }
-                        else if (direction.equals("up") && !maze[i-1][j].equals(WALL))
-                        {
-                            maze[i][j] = " ";
-                            maze[i-1][j] = FACE;
-                            i = maze.length;
-                            break;
-                        }
-                        else if (direction.equals("down") && !maze[i+1][j].equals(WALL))
-                        {
-                            maze[i][j] = " ";
-                            maze[i+1][j] = FACE;
-                            i = maze.length;
-                            break;
-                        }
-                    }
-                    catch (Exception e)
-                    {
+                tempMaze[i][j] = maze[i][j];
+            }
+        }
 
+        for (int row = 1; row < size-2; row++)
+        {
+            for (int col = 1; col < size-2; col++)
+            {
+//                if (row == 1 & col == 1)
+//                {
+//
+//                }
+//                else if (tempMaze[row][col].equals(" "))
+//                {
+//                    int up = boolToInt(maze[row-1][col].equals(" "));
+//                    int down = boolToInt(maze[row+1][col].equals(" "));
+//                    int left = boolToInt(maze[row][col-1].equals(" "));
+//                    int right = boolToInt(maze[row][col+1].equals(" "));
+//                    if (up + down + left + right == 1)
+//                    {
+//                        maze[row][col] = WALL;
+//                    }
+//                }
+                if (tempMaze[row][col].equals(WALL))
+                {
+                    int up = boolToInt(maze[row-1][col].equals(" "));
+                    int down = boolToInt(maze[row+1][col].equals(" "));
+                    int left = boolToInt(maze[row][col-1].equals(" "));
+                    int right = boolToInt(maze[row][col+1].equals(" "));
+                    int nw = boolToInt(maze[row-1][col-1].equals(" "));
+                    int ne = boolToInt(maze[row-1][col+1].equals(" "));
+                    int sw = boolToInt(maze[row+1][col-1].equals(" "));
+                    int se = boolToInt(maze[row+1][col+1].equals(" "));
+                    int sum = up + down + left + right + nw + ne + sw + se;
+                    if (sum <= 3)
+                    {
+                        maze[row][col] = " ";
                     }
                 }
             }
         }
-        return checkWin();
+        maze[1][0] = face;
     }
 
     public int boolToInt(boolean tf)
@@ -217,7 +213,7 @@ public class Maze
         int down = boolToInt(notVisited(new Coordinate(row+1, col)) && checkSpace(new Coordinate(row+1, col), "down"));
         int left = boolToInt(notVisited(new Coordinate(row, col-1)) && checkSpace(new Coordinate(row, col-1), "left"));
         int right = boolToInt(notVisited(new Coordinate(row, col+1)) && checkSpace(new Coordinate(row, col+1), "right"));
-        return up + down + left + right >= 2;
+        return up + down + left + right >= 1;
     }
 
     public boolean checkSpace(Coordinate coord, String directionGoing)
@@ -284,10 +280,78 @@ public class Maze
         return true;
     }
 
+    public boolean move(String direction)
+    {
+        for (int i = 0; i < maze.length; i++)
+        {
+            for (int j = 0; j < maze[0].length; j++)
+            {
+                if (maze[i][j].equals(face))
+                {
+                    try
+                    {
+                        if (direction.equals("right") && !maze[i][j+1].equals(WALL))
+                        {
+                            maze[i][j] = " ";
+                            maze[i][j+1] = face;
+                            i = maze.length;
+                            break;
+                        }
+                        else if (direction.equals("left") && !maze[i][j-1].equals(WALL))
+                        {
+                            maze[i][j] = " ";
+                            maze[i][j-1] = face;
+                            i = maze.length;
+                            break;
+                        }
+                        else if (direction.equals("up") && !maze[i-1][j].equals(WALL))
+                        {
+                            maze[i][j] = " ";
+                            maze[i-1][j] = face;
+                            i = maze.length;
+                            break;
+                        }
+                        else if (direction.equals("down") && !maze[i+1][j].equals(WALL))
+                        {
+                            maze[i][j] = " ";
+                            maze[i+1][j] = face;
+                            i = maze.length;
+                            break;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+
+                    }
+                }
+            }
+        }
+        return checkWin();
+    }
+
+    public void moveFace(Coordinate coord)
+    {
+        for (int i = 0; i < size; i++)
+        {
+            for (int j = 0; j < size; j++)
+            {
+                if (maze[i][j].equals(face))
+                {
+                    maze[i][j] = " ";
+                }
+            }
+        }
+        maze[coord.getRow()][coord.getCol()] = face;
+    }
 
     public boolean checkWin()
     {
-        return maze[maze.length-2][maze[0].length-1].equals(FACE);
+        return maze[maze.length-2][maze[0].length-1].equals(face);
+    }
+
+    public void setFace(String face)
+    {
+        this.face = face.substring(0, 1);
     }
 
     public String[][] getMaze()
