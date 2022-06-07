@@ -6,6 +6,7 @@ public class Maze
     private String face;
     private String[][] maze;
     private int size;
+    private int moves;
     private ArrayList<Coordinate> visitedCells;
 
     public Maze(int size)
@@ -29,42 +30,16 @@ public class Maze
             for (int col = 0; col < maze[0].length; col++)
             {
                 maze[row][col] = WALL;
-//                if (row == 0 || col == 0 || row == maze.length - 1 || col == maze[0].length - 1)
-//                {
-//                    maze[row][col] = WALL;
-//                }
-//                else
-//                {
-//                    maze[row][col] = " ";
-//                }
             }
         }
         maze[maze.length-2][maze[0].length-1] = " ";
         maze[maze.length-2][maze[0].length-2] = " ";
     }
 
-    public static String printArr(String[][] arr)
-    {
-        String returnStr = "";
-
-        for (String[] row : arr)
-        {
-            for (String str : row)
-            {
-                returnStr += str;
-            }
-            returnStr += "\n";
-        }
-        System.out.println(returnStr);
-        return returnStr;
-    }
-
     public void makeMaze(Coordinate coord)
     {
         int row = coord.getRow();
         int col = coord.getCol();
-//        System.out.println(row + ", " + col);
-//        printArr(maze);
         visitedCells.add(coord);
         maze[row][col] = " ";
         boolean up = checkSpace(new Coordinate(row-1, col), "up");
@@ -72,12 +47,6 @@ public class Maze
         boolean left = checkSpace(new Coordinate(row, col-1), "left");
         boolean right = checkSpace(new Coordinate(row, col+1), "right");
         int count = boolToInt(up) + boolToInt(down) + boolToInt(left) + boolToInt(right);
-//        System.out.println(count);
-//        System.out.println("nottvisited up: " + notVisited(new Coordinate(row-1, col)));
-//        System.out.println(up);
-//        System.out.println(down);
-//        System.out.println(left);
-//        System.out.println(right);
         if (count == 0)
         {
             for (int i = 1; i < size-1; i++)
@@ -87,7 +56,6 @@ public class Maze
                     Coordinate tempCoord = new Coordinate(i, j);
                     if (validScan(tempCoord))
                     {
-//                        System.out.println("scan");
                         makeMaze(tempCoord);
                     }
                 }
@@ -102,23 +70,19 @@ public class Maze
         list.add(right);
         for (int i = 0; i < 4; i++)
         {
-            if (list.get(i) == true)
+            if (list.get(i))
             {
                 temp++;
             }
             if (temp == random)
             {
                 if (i == 0) {
-                    //System.out.println("                                       up");
                     makeMaze(new Coordinate(row - 1, col));
                 } else if (i == 1) {
-                    //System.out.println("                                       down");
                     makeMaze(new Coordinate(row + 1, col));
                 } else if (i == 2) {
-                    //System.out.println("                                       left");
                     makeMaze(new Coordinate(row, col - 1));
                 } else if (i == 3) {
-                    //System.out.println("                                       right");
                     makeMaze(new Coordinate(row, col + 1));
                 }
                 break;
@@ -142,21 +106,6 @@ public class Maze
         {
             for (int col = 1; col < size-2; col++)
             {
-//                if (row == 1 & col == 1)
-//                {
-//
-//                }
-//                else if (tempMaze[row][col].equals(" "))
-//                {
-//                    int up = boolToInt(maze[row-1][col].equals(" "));
-//                    int down = boolToInt(maze[row+1][col].equals(" "));
-//                    int left = boolToInt(maze[row][col-1].equals(" "));
-//                    int right = boolToInt(maze[row][col+1].equals(" "));
-//                    if (up + down + left + right == 1)
-//                    {
-//                        maze[row][col] = WALL;
-//                    }
-//                }
                 if (tempMaze[row][col].equals(WALL))
                 {
                     int up = boolToInt(maze[row-1][col].equals(" "));
@@ -295,6 +244,7 @@ public class Maze
                             maze[i][j] = " ";
                             maze[i][j+1] = face;
                             i = maze.length;
+                            moves++;
                             break;
                         }
                         else if (direction.equals("left") && !maze[i][j-1].equals(WALL))
@@ -302,6 +252,7 @@ public class Maze
                             maze[i][j] = " ";
                             maze[i][j-1] = face;
                             i = maze.length;
+                            moves++;
                             break;
                         }
                         else if (direction.equals("up") && !maze[i-1][j].equals(WALL))
@@ -309,6 +260,7 @@ public class Maze
                             maze[i][j] = " ";
                             maze[i-1][j] = face;
                             i = maze.length;
+                            moves++;
                             break;
                         }
                         else if (direction.equals("down") && !maze[i+1][j].equals(WALL))
@@ -316,12 +268,13 @@ public class Maze
                             maze[i][j] = " ";
                             maze[i+1][j] = face;
                             i = maze.length;
+                            moves++;
                             break;
                         }
                     }
                     catch (Exception e)
                     {
-
+                        //
                     }
                 }
             }
@@ -331,6 +284,7 @@ public class Maze
 
     public void moveFace(Coordinate coord)
     {
+        moves++;
         for (int i = 0; i < size; i++)
         {
             for (int j = 0; j < size; j++)
@@ -362,5 +316,9 @@ public class Maze
     public int getSize()
     {
         return size;
+    }
+
+    public int getMoves() {
+        return moves;
     }
 }

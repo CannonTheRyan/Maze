@@ -1,11 +1,9 @@
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.concurrent.SubmissionPublisher;
 
 public class GUI implements KeyListener, ActionListener
 {
@@ -18,6 +16,7 @@ public class GUI implements KeyListener, ActionListener
     private JPanel mazePanel;
     private JPanel timerPanel;
     private JPanel tipPanel;
+    private JPanel winPanel;
     private JTextField characterSelector;
     private JSlider slider;
     private TimerClass timer;
@@ -25,7 +24,8 @@ public class GUI implements KeyListener, ActionListener
     public GUI()
     {
         timer = new TimerClass();
-        winMatrix = new String[6][45];
+        winMatrix = new String[6][47];
+        youWinInitializer();
     }
 
     public void initialize()
@@ -64,11 +64,14 @@ public class GUI implements KeyListener, ActionListener
 
         frame.pack();
         frame.setVisible(true);
-
     }
 
     public void reload()
     {
+        if (frame.getWidth() != maze.getSize() * 10 + 25)
+        {
+            frame.setSize(maze.getSize() * 10 + 25, maze.getSize() * 10 + 60);
+        }
         frame.remove(timerPanel);
         timerPanel = new JPanel();
         JLabel timerLabel = new JLabel("Time: " + timer.getTime());
@@ -99,29 +102,47 @@ public class GUI implements KeyListener, ActionListener
     private void showWinningScreen()
     {
         frame.setSize(560, 220);
-        youWinInitializer();
-        JPanel textPanel = new JPanel();
-        textPanel.setLayout(new GridLayout(winMatrix.length, winMatrix[0].length, 0, 0));
+        frame.remove(winPanel);
+        winPanel = new JPanel();
+        winPanel.setLayout(new GridLayout(winMatrix.length, winMatrix[0].length, 0, 0));
         for (int i = 0; i < winMatrix.length; i++)
         {
             for (int j = 0; j < winMatrix[0].length; j++)
             {
                 JLabel l = new JLabel(winMatrix[i][j]);
-                textPanel.add(l);
+                l.setFont(new Font("Impact", Font.PLAIN, 24));
+                winPanel.add(l);
             }
         }
-        frame.add(textPanel);
+        frame.add(winPanel, BorderLayout.NORTH);
 
+        JPanel timePanel = new JPanel();
+        JLabel timeLabel = new JLabel("Time: " + timer.getTime());
+        timeLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 36));
+        timePanel.add(timeLabel);
+
+        JPanel movesPanel = new JPanel();
+        JLabel movesLabel = new JLabel("Amount of Moves: " + maze.getMoves());
+        movesLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 36));
+        movesPanel.add(movesLabel);
+
+        JPanel statsPanel = new JPanel();
+        statsPanel.setLayout(new GridLayout(0, 1, 0, 0));
+        statsPanel.add(timePanel);
+        statsPanel.add(movesPanel);
+        frame.add(statsPanel, BorderLayout.CENTER);
+
+        frame.pack();
     }
 
     public void youWinInitializer()
     {
-        stringIntoArray(0, "Y   Y  OOO  U   U     W     W III N   N    !!");
-        stringIntoArray(1, " Y Y  O   O U   U     W     W  I  NN  N    !!");
-        stringIntoArray(2, "  Y   O   O U   U     W  W  W  I  N N N    !!");
-        stringIntoArray(3, "  Y   O   O U   U      W W W   I  N  NN      ");
-        stringIntoArray(4, "  Y    OOO   UUU        W W   III N   N    !!");
-        stringIntoArray(5, "                                             ");
+        stringIntoArray(0, " Y   Y  OOO  U   U     W     W III N   N    !! ");
+        stringIntoArray(1, "  Y Y  O   O U   U     W     W  I  NN  N    !! ");
+        stringIntoArray(2, "   Y   O   O U   U     W  W  W  I  N N N    !! ");
+        stringIntoArray(3, "   Y   O   O U   U      W W W   I  N  NN       ");
+        stringIntoArray(4, "   Y    OOO   UUU        W W   III N   N    !! ");
+        stringIntoArray(5, "                                               ");
     }
 
     public void stringIntoArray(int row, String str)
@@ -132,34 +153,9 @@ public class GUI implements KeyListener, ActionListener
         }
     }
 
-    public void animateYouWin(String direction)
-    {
-        if (direction.equals("up"))
-        {
-            for (int i = 0; i < 5; i++)
-            {
-                for (int j = 0; j < 45; j++)
-                {
-                    winMatrix[i][j] = winMatrix[i+1][j];
-                }
-            }
-        }
-        else if (direction.equals("down"))
-        {
-            for (int i = 5; i > 0; i--)
-            {
-                for (int j = 0; j < 45; j++)
-                {
-                    winMatrix[i][j] = winMatrix[i-1][j];
-                }
-            }
-        }
-    }
-
     @Override
     public void keyPressed(KeyEvent e)
     {
-        //System.out.println(frame.getHeight() + " " + frame.getWidth());
         int keyCode = e.getKeyCode();
         boolean win = false;
         if (keyCode == KeyEvent.VK_W) {
@@ -174,16 +170,15 @@ public class GUI implements KeyListener, ActionListener
             maze.moveFace(new Coordinate(1, 0));
         } else if (keyCode == KeyEvent.VK_P) {
             maze.moveFace(new Coordinate(maze.getSize()-2, maze.getSize()-2));
-        } else if (keyCode == KeyEvent.VK_U) {
-            System.out.println(frame.getWidth() + " " + frame.getHeight());
         }
-        if (keyCode != KeyEvent.VK_U)
-            reload();
+        reload();
         if (win)
         {
             frame.remove(timerPanel);
             frame.remove(mazePanel);
             frame.remove(tipPanel);
+            winPanel = new JPanel();
+            frame.add(winPanel);
             timer.stopTimer();
             showWinningScreen();
         }
@@ -204,17 +199,16 @@ public class GUI implements KeyListener, ActionListener
     public void actionPerformed(ActionEvent e)
     {
         int size = slider.getValue();
-        maze = new Maze(size);
+        maze = new Maze(size);frame.setSize(size * 10 + 20, size * 10 + 55);
         maze.setFace(characterSelector.getText());
-        maze.makeMaze(new Coordinate(1, 1));
-        maze.makeMaze(new Coordinate(size - 2, size - 2));
-        maze.cleanUpMaze();
         mazePanel = new JPanel(new GridLayout(maze.getSize(), maze.getSize(), 0, -5));
         frame.remove(sliderPanel);
         frame.remove(textFieldPanel);
         frame.remove(submitPanel);
+        maze.makeMaze(new Coordinate(1, 1));
+        maze.makeMaze(new Coordinate(size - 2, size - 2));
+        maze.cleanUpMaze();
         frame.add(mazePanel);
-        frame.setSize(size * 10 + 25, size * 10 + 55);
         timer.startTimer();
         timerPanel = new JPanel();
         tipPanel = new JPanel();
