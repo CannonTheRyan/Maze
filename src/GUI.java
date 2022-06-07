@@ -156,31 +156,34 @@ public class GUI implements KeyListener, ActionListener
     @Override
     public void keyPressed(KeyEvent e)
     {
-        int keyCode = e.getKeyCode();
-        boolean win = false;
-        if (keyCode == KeyEvent.VK_W) {
-            win = maze.move("up");
-        } else if (keyCode == KeyEvent.VK_S) {
-            win = maze.move("down");
-        } else if (keyCode == KeyEvent.VK_A) {
-            win = maze.move("left");
-        } else if (keyCode == KeyEvent.VK_D) {
-            win = maze.move("right");
-        } else if (keyCode == KeyEvent.VK_SPACE) {
-            maze.moveFace(new Coordinate(1, 0));
-        } else if (keyCode == KeyEvent.VK_P) {
-            maze.moveFace(new Coordinate(maze.getSize()-2, maze.getSize()-2));
-        }
-        reload();
-        if (win)
+        if (maze != null)
         {
-            frame.remove(timerPanel);
-            frame.remove(mazePanel);
-            frame.remove(tipPanel);
-            winPanel = new JPanel();
-            frame.add(winPanel);
-            timer.stopTimer();
-            showWinningScreen();
+            int keyCode = e.getKeyCode();
+            boolean win = false;
+            if (keyCode == KeyEvent.VK_W) {
+                win = maze.move("up");
+            } else if (keyCode == KeyEvent.VK_S) {
+                win = maze.move("down");
+            } else if (keyCode == KeyEvent.VK_A) {
+                win = maze.move("left");
+            } else if (keyCode == KeyEvent.VK_D) {
+                win = maze.move("right");
+            } else if (keyCode == KeyEvent.VK_SPACE) {
+                maze.moveFace(new Coordinate(1, 0));
+            } else if (keyCode == KeyEvent.VK_P) {
+                maze.moveFace(new Coordinate(maze.getSize() - 2, maze.getSize() - 2));
+            }
+            reload();
+            if (win)
+            {
+                frame.remove(timerPanel);
+                frame.remove(mazePanel);
+                frame.remove(tipPanel);
+                winPanel = new JPanel();
+                frame.add(winPanel);
+                timer.stopTimer();
+                showWinningScreen();
+            }
         }
     }
 
